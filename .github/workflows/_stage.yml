@@ -12,13 +12,13 @@ on: # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
       from:
         description: The source branch
         type: string
-        required: true
+        required: false
         default: main
       to:
         # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
         description: The branch to merge into
         type: string
-        required: true
+        required: false
         default: test
     secrets:
       crToken:
