@@ -1,0 +1,78 @@
+name: _stage
+
+on: # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
+  workflow_call:
+    inputs:
+      runs-on:
+        description: The default build-agent
+        type: string
+        required: false
+        # See https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
+        default: "ubuntu-20.04"
+      from:
+        description: The source branch
+        type: string
+        required: true
+        default: main
+      to:
+        # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
+        description: The branch to merge into
+        type: string
+        required: true
+        default: test
+    secrets:
+      crToken:
+        required: true
+
+# https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#defaults
+defaults:
+  run:
+    shell: bash
+
+env:
+  COMPONENT: ${{ inputs.component }}
+
+# https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobs
+jobs:
+  version:
+    runs-on: ${{ inputs.runs-on }}
+    outputs: # NOTE: We need the output in other jobs
+      semver: ${{ steps.gitversion.outputs.semVer }}
+    steps:
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: "5.x"
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # For gitversion
+      # https://github.com/GitTools/actions/blob/main/docs/examples/github/gitversion/index.md
+      - id: gitversion
+        name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        with:
+          useConfigFile: true
+
+  pr:
+    runs-on: ${{ inputs.runs-on }}
+    needs: version
+    steps:
+    # possbile run sonarcloud?
+    # https://github.com/marketplace/actions/create-pull-request
+    - uses: actions/checkout@v2
+    - id: pr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        branch: ${{ inputs.to }}
+        base: ${{ inputs.from }}
+        title: Deploy ${{ needs.version.outputs.semver }} to ${{ inputs.to }} stage 
+        body: |
+          Approve and merge in order to stage changes to ${{ inputs.to }} stage.
+          New version: ${{ needs.version.outputs.semver }} 
+        delete-branch: false
+        draft: false
+        reviewers: consileo-stoe/
+    - name: Print
+      run: |
+        echo "Pull Request Number - ${{ steps.cp.outputs.pull-request-number }}"
+        echo "Pull Request URL - ${{ steps.cp.outputs.pull-request-url }}"
