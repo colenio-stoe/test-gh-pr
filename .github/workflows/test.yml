@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "web-client/**"
   #--- TODO: For now also enable manual runs
   workflow_dispatch:
 
