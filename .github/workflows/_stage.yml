@@ -20,9 +20,6 @@ on: # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
         type: string
         required: false
         default: test
-    secrets:
-      crToken:
-        required: true
 
 # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#defaults
 defaults:
