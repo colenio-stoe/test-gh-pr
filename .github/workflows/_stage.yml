@@ -55,7 +55,7 @@ jobs:
     needs: version
     steps:
     # possbile run sonarcloud?
-    # https://github.com/marketplace/actions/create-pull-request
+    # https://github.com/repo-sync/pull-request
     - uses: actions/checkout@v2
     - id: pr
       uses: repo-sync/pull-request@v2
