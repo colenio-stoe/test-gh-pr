@@ -26,9 +26,6 @@ defaults:
   run:
     shell: bash
 
-env:
-  COMPONENT: ${{ inputs.component }}
-
 # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobs
 jobs:
   version:
@@ -50,11 +47,12 @@ jobs:
         with:
           useConfigFile: true
 
+  # TODO: Add quality gates (e.g. SonarCloud)
+
   pr:
     runs-on: ${{ inputs.runs-on }}
     needs: version
     steps:
-    # possbile run sonarcloud?
     # https://github.com/repo-sync/pull-request
     - uses: actions/checkout@v2
     - id: pr
