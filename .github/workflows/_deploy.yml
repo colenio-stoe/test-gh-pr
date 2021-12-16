@@ -41,7 +41,7 @@ jobs:
     steps:
     - name: Deploy
       run: |
-        Deploying ${{ needs.version.outputs.semVer }} to '${{ inputs.stage }}'
+        echo "Deploying ${{ needs.version.outputs.semVer }} to '${{ inputs.stage }}'"
 
   deploy:
     runs-on: ${{ inputs.runs-on }}
@@ -52,4 +52,4 @@ jobs:
     steps:
     - name: Deploy
       run: |
-        Deploying ${{ needs.version.outputs.semVer }} to '${{ inputs.stage }}'
+        echo "Deploying ${{ needs.version.outputs.semVer }} to '${{ inputs.stage }}'"
