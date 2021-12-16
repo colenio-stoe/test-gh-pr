@@ -46,6 +46,9 @@ jobs:
   deploy:
     runs-on: ${{ inputs.runs-on }}
     needs: ["version", "fuu"]
+    # Always run this job except there was a failure in the previous jobs
+    # https://github.community/t/run-a-job-if-at-least-one-of-the-previous-ones-succeeded/163777 
+    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
     steps:
     - name: Deploy
       run: |
