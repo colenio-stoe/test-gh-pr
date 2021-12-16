@@ -26,9 +26,6 @@ defaults:
   run:
     shell: bash
 
-env:
-  COMPONENT: ${{ inputs.component }}
-
 # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobs
 jobs:
   version:
@@ -50,26 +47,27 @@ jobs:
         with:
           useConfigFile: true
 
+  # TODO: Add quality gates (e.g. SonarCloud)
+
   pr:
     runs-on: ${{ inputs.runs-on }}
     needs: version
     steps:
-    # possbile run sonarcloud?
-    # https://github.com/marketplace/actions/create-pull-request
+    # https://github.com/repo-sync/pull-request
     - uses: actions/checkout@v2
     - id: pr
-      uses: peter-evans/create-pull-request@v3
+      uses: repo-sync/pull-request@v2
       with:
-        branch: ${{ inputs.to }}
-        base: ${{ inputs.from }}
-        title: Deploy ${{ needs.version.outputs.semver }} to ${{ inputs.to }} stage 
-        body: |
+        destination_branch: ${{ inputs.to }}
+        source_branch: ${{ inputs.from }}
+        pr_title: Deploy ${{ needs.version.outputs.semver }} to ${{ inputs.to }} stage 
+        pr_body: |
           Approve and merge in order to stage changes to ${{ inputs.to }} stage.
           New version: ${{ needs.version.outputs.semver }} 
-        delete-branch: false
-        draft: false
-        reviewers: consileo-stoe/
+        pr_draft: false
+        pr_reviewer: consileo-stoe/
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Print
       run: |
-        echo "Pull Request Number - ${{ steps.cp.outputs.pull-request-number }}"
-        echo "Pull Request URL - ${{ steps.cp.outputs.pull-request-url }}"
+        echo "Pull Request Number - ${{ steps.cp.outputs.pr_number }}"
+        echo "Pull Request URL - ${{ steps.cp.outputs.pr_url }}"

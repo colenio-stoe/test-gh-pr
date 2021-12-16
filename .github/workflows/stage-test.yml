@@ -1,0 +1,9 @@
+name: stage-test
+on:
+  push:
+    branches:
+      - test
+
+jobs:
+  build:
+    uses: consileo-stoe/test-gh-pr/.github/workflows/_deploy.yml@main
