@@ -35,8 +35,17 @@ jobs:
       with:
         useConfigFile: true
 
+  fuu:
+    runs-on: ${{ inputs.runs-on }}
+    if: inputs.stage == 'f'
+    steps:
+    - name: Deploy
+      run: |
+        Deploying ${{ needs.version.outputs.semVer }} to '${{ inputs.stage }}'
+
   deploy:
     runs-on: ${{ inputs.runs-on }}
+    needs: ["version", "fuu"]
     steps:
     - name: Deploy
       run: |
